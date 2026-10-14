@@ -1,0 +1,7 @@
+# A secondary load-cell probe must coexist with the primary BLTouch and
+# expose prefixed commands rather than replacing the standard probe commands.
+CONFIG load_cell_secondary.cfg
+DICTIONARY atmega2560.dict
+
+QUERY_PROBE
+LOAD_CELL_QUERY_PROBE
