@@ -788,6 +788,7 @@ class TappingMove:
     # perform a complete tapping cycle
     def probing_move(self, pos, speed, gcmd) -> tuple[list[float], bool]:
         self._is_last_result_valid = False
+        self._last_result = None
         # do the probing/homing move
         epos, collector = self._load_cell_primitives.probing_move(
             self, pos, speed, gcmd
@@ -796,6 +797,7 @@ class TappingMove:
         if self._config_helper.is_pullback_move_disabled():
             collector.stop_collecting()
             self._is_last_result_valid = True
+            self._last_result = epos[2]
             return epos, self._is_last_result_valid
         # do the pullback move
         pullback_end_time = self.pullback_move(gcmd)
@@ -817,11 +819,13 @@ class TappingMove:
         # if the tap is valid, replace the z position with the calculated one
         if self._is_last_result_valid:
             epos[2] = tap_analysis.get_tap_pos()[2]
+            self._last_result = epos[2]
         return epos, self._is_last_result_valid
 
     def get_status(self, eventtime):
         status = self._load_cell_primitives.get_status(eventtime)
         status["is_last_tap_valid"] = self._is_last_result_valid
+        status["last_z_result"] = self._last_result
         return status
 
 
